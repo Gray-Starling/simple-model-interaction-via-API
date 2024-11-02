@@ -1,0 +1,6 @@
+__pycache__
+.conda
+News_Category_Dataset_v3.json
+text_classifier
+*.pkl
+*.keras

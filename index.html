@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            text-align: center;
+        }
+        .container2 {
+            max-width: 60vw;
+            margin: auto;
+            text-align: center;
+            padding-top: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .text-example {
+            cursor: pointer;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Text Prediction</h2>
+        <input type="text" id="textInput" placeholder="Enter text for prediction">
+        <button onclick="sendText()">Predict</button>
+        
+        <div class="result" id="result">Prediction will appear here</div>
+    </div>
+    <div class="container2">
+        <div>Text examples (click to copy):</div>
+        <br>
+        <div class="text-example" data-text="Brittany Wong Meet The Women Who Say They're 'Canceling Out' Their Dads' Votes What do I mean to my dad when he is willing to put his paycheck before my well-being?" onclick="copy(this)">Brittany Wong Meet The Women Who Say They're 'Canceling Out' Their Dads' Votes What do I mean to my dad when he is willing to put his paycheck before my well-being?</div>
+        <br>
+        <div class="text-example" data-text="Nick Visser JD Vance Says Anti-Muslim Policies Just Common Sense In Joe Rogan Interview Somehow it`s fundamentally racist to say, well, we don`t want certain people of certain backgrounds to be in the United States of America." onclick="copy(this)">Nick Visser JD Vance Says Anti-Muslim Policies Just Common Sense In Joe Rogan Interview Somehow it`s fundamentally racist to say, well, we don`t want certain people of certain backgrounds to be in the United States of America.</div>
+    </div>
+
+    <script>
+        async function sendText() {
+            const text = document.getElementById("textInput").value;
+            
+            if (!text) {
+                alert("Please enter some text!");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Error with prediction request");
+                }
+
+                const data = await response.json();
+                document.getElementById("result").innerText = "Prediction: " + data.prediction;
+            } catch (error) {
+                document.getElementById("result").innerText = "Error: " + error.message;
+            }
+        }
+
+        function copy(element) {
+            const textToCopy = element.getAttribute("data-text");
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    alert("Text copied to clipboard!");
+                })
+                .catch(err => {
+                    console.error("Failed to copy text: ", err);
+                });
+        }
+    </script>
+</body>
+</html>
